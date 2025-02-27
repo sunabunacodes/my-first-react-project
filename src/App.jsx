@@ -1,16 +1,21 @@
-const title = 'React';
+import js from "@eslint/js";
+
+function getTitle(title) {
+  return title;
+}
+
+// JSX uses camelCase for attributes instead of HTML's kebab-case (e.g., htmlFor instead of for).
+// JSX is a syntax extension to JavaScript. Build tools are used to recognize JSX in .js files.
+// React doesn't require you to use JSX, but it's intuitive and commonly used.
+// You can embed JavaScript expressions in JSX using {}.
+// JSX can't be directly rendered by browsers and needs to be compiled.
 
 function App() {
-  // can perform some logic here before returning the JSX
-  // variables and functions defined inside this function (before the return statement) will be redefined on each render
-  
-  const greeting = 'Hello React'; // this var will be redefined on each render
-  
   return (
     <div>
-      {/* cannot define variables or functions directly inside the return statement */}
-      <h1>{greeting}</h1>
-      <p>{`Welcome to ${title}`}</p> {/* inline expression */}
+      <h1>Hello {getTitle('React')}</h1> {/* {} used to interpolate JavaScript expression */}
+      <label htmlFor="search">Search: </label>
+      <input id="search" type="text" /> {/* If you look at attributes like id, HTML can almost be used in its native form */}
     </div>
   );
 }
