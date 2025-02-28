@@ -34,6 +34,7 @@ const App = () => { // React Function Component
       <hr />
 
       <List list={stories} /> {/* React Props */} {/* [5: Callback Handlers in JSX]: App passes stories to List */}
+
     </div>
   );
 };
