@@ -28,7 +28,23 @@ const App = () => {
   const searchedStories = stories.filter((story) =>
     story.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
+
+  // Example of using spread operator to copy an object
+  const newStory = {
+    title: 'New Story',
+    url: 'https://newstory.com',
+    author: 'Author Name',
+    num_comments: 0,
+    points: 0,
+    objectID: 2,
+  };
+
+  const updatedStories = [...stories, newStory]; // Adding a new story to the existing stories array
+
+  // Example of using rest operator to collect remaining properties
+  const { title, url, ...rest } = newStory;
+  console.log(rest); // { author: 'Author Name', num_comments: 0, points: 0, objectID: 2 }
+
   return (
     <div>
       <h1>My Hacker Stories</h1>
@@ -42,34 +58,38 @@ const App = () => {
   );
 };
 
-const Search = (props) => (
+// props gave us access to the data we needed, but another approach is to use destructuring to get the data we need directly from the props object
+const Search = ({ search, onSearch }) => (
   <div>
     <label htmlFor="search">Search: </label>
     <input
       id="search"
       type="text"
-      value={props.search}
-      onChange={props.onSearch}
+      value={search}
+      onChange={onSearch}
     />
   </div>
 );
 
-const List = (props) => (
+const List = ({ list }) => (
   <ul>
-    {props.list.map((item) => (
+    {list.map((item) => (
       <Item key={item.objectID} item={item} />
     ))}
   </ul>
 );
 
-const Item = (props) => (
+// Example of nested destructuring
+// Instead of accessing these properties individually like this:
+// const { title, url, author, num_comments, points } = props.item;
+const Item = ({ item: { title, url, author, num_comments, points } }) => (
   <li>
     <span>
-      <a href={props.item.url}>{props.item.title}</a>
+      <a href={url}>{title}</a>
     </span>
-    <span>{props.item.author}</span>
-    <span>{props.item.num_comments}</span>
-    <span>{props.item.points}</span>
+    <span>{author}</span>
+    <span>{num_comments}</span>
+    <span>{points}</span>
   </li>
 );
 
