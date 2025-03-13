@@ -20,7 +20,16 @@ const App = () => {
     },
   ];
 
-  const [searchTerm, setSearchTerm] = React.useState('React');
+  const [searchTerm, setSearchTerm] = React.useState(
+    localStorage.getItem('search') || 'React'
+  );
+
+  // useEffect to update local storage whenever searchTerm changes
+  React.useEffect(() => {
+    // Update local storage with the current searchTerm
+    localStorage.setItem('search', searchTerm);
+  }, [searchTerm]); // Dependency array ensures this runs when searchTerm changes
+
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -28,22 +37,6 @@ const App = () => {
   const searchedStories = stories.filter((story) =>
     story.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // Example of using spread operator to copy an object
-  const newStory = {
-    title: 'New Story',
-    url: 'https://newstory.com',
-    author: 'Author Name',
-    num_comments: 0,
-    points: 0,
-    objectID: 2,
-  };
-
-  const updatedStories = [...stories, newStory]; // Adding a new story to the existing stories array
-
-  // Example of using rest operator to collect remaining properties
-  const { title, url, ...rest } = newStory;
-  console.log(rest); // { author: 'Author Name', num_comments: 0, points: 0, objectID: 2 }
 
   return (
     <div>
@@ -58,7 +51,6 @@ const App = () => {
   );
 };
 
-// props gave us access to the data we needed, but another approach is to use destructuring to get the data we need directly from the props object
 const Search = ({ search, onSearch }) => (
   <div>
     <label htmlFor="search">Search: </label>
@@ -79,17 +71,14 @@ const List = ({ list }) => (
   </ul>
 );
 
-// Example of nested destructuring
-// Instead of accessing these properties individually like this:
-// const { title, url, author, num_comments, points } = props.item;
-const Item = ({ item: { title, url, author, num_comments, points } }) => (
+const Item = ({ item }) => (
   <li>
     <span>
-      <a href={url}>{title}</a>
+      <a href={item.url}>{item.title}</a>
     </span>
-    <span>{author}</span>
-    <span>{num_comments}</span>
-    <span>{points}</span>
+    <span>{item.author}</span>
+    <span>{item.num_comments}</span>
+    <span>{item.points}</span>
   </li>
 );
 
