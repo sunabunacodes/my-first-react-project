@@ -1,5 +1,18 @@
 import * as React from 'react';
 
+// Custom hook to sync state with localStorage using useState and useEffect
+const useStorageState = (key, initialState) => {
+  const [value, setValue] = React.useState(
+    localStorage.getItem(key) || initialState
+  );
+
+  React.useEffect(() => {
+    localStorage.setItem(key, value); // Updates localStorage whenever the state changes
+  }, [value, key]);
+
+  return [value, setValue];
+};
+
 const App = () => {
   const stories = [
     {
@@ -20,15 +33,12 @@ const App = () => {
     },
   ];
 
-  const [searchTerm, setSearchTerm] = React.useState(
-    localStorage.getItem('search') || 'React'
-  );
-
-  // useEffect to update local storage whenever searchTerm changes
-  React.useEffect(() => {
-    // Update local storage with the current searchTerm
-    localStorage.setItem('search', searchTerm);
-  }, [searchTerm]); // Dependency array ensures this runs when searchTerm changes
+// Key ('search') is used to store and retrieve the value from localStorage
+// Initial state ('React') is used if no value exists in localStorage for  given key
+const [searchTerm, setSearchTerm] = useStorageState(
+  'search',
+  'React'
+);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
