@@ -37,21 +37,23 @@ const [searchTerm, setSearchTerm] = useStorageState(
   'React'
 );
 
+  // imperative because it provides step-by-step instructions to update the state
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
 
+  // declarative
   const searchedStories = stories.filter((story) =>
     story.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // everything passed between a component the opening and closing tag of the component is called children
   return (
     <div>
       <h1>My Hacker Stories</h1>
       <InputWithLabel
         id="search"
         value={searchTerm}
+        isFocused
         onInputChange={handleSearch}
       >
         <strong>Search:</strong>
@@ -59,28 +61,52 @@ const [searchTerm, setSearchTerm] = useStorageState(
 
       <hr />
 
+      {/* declarative */}
       <List list={searchedStories} />
     </div>
   );
 };
+
+// Imperative: We provide *step-by-step how instructions* (e.g., useRef + useEffect to focus the input directly).
+// Declarative: We tell *what to do* and let React handle the details (e.g., List rendering items from props).
 const InputWithLabel = ({
   id,
   value,
   type = 'text',
   onInputChange,
+  isFocused,
   children,
-}) => (
-  <>
-    <label htmlFor={id}>{children}</label>
-    &nbsp;
-    <input
-      id={id}
-      type={type}
-      value={value}
-      onChange={onInputChange}
-    />
-  </>
-);
+}) => {
+
+  // imperative
+
+  // useRef is used here to directly interact with the DOM element (the input field)
+  // avoids unnecessary renders because updating a ref doesn't trigger a re-render
+  // e.g. of using useRef for an imperative action: focusing the input
+  const inputRef = React.useRef();
+
+  // useEffect is used here with useRef to perform an action (focusing the input)
+  React.useEffect(() => {
+    if (isFocused && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isFocused]); // Dependency array ensures this runs only when isFocused changes
+
+  return (
+    <>
+      {/* declarative */}
+      <label htmlFor={id}>{children}</label>
+      &nbsp;
+      <input
+        ref={inputRef} // ref is attached to the input element
+        id={id}
+        type={type}
+        value={value}
+        onChange={onInputChange}
+      />
+    </>
+  );
+};
 
 const List = ({ list }) => (
   <ul>
