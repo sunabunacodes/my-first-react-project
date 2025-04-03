@@ -45,16 +45,17 @@ const [searchTerm, setSearchTerm] = useStorageState(
     story.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // everything passed between a component the opening and closing tag of the component is called children
   return (
     <div>
       <h1>My Hacker Stories</h1>
-
       <InputWithLabel
         id="search"
-        label="Search"
         value={searchTerm}
         onInputChange={handleSearch}
-      />
+      >
+        <strong>Search:</strong>
+      </InputWithLabel>
 
       <hr />
 
@@ -62,17 +63,15 @@ const [searchTerm, setSearchTerm] = useStorageState(
     </div>
   );
 };
-// turn specialized component into a generic one
 const InputWithLabel = ({
   id,
-  label,
   value,
   type = 'text',
   onInputChange,
+  children,
 }) => (
-  // React.Fragment
   <>
-    <label htmlFor={id}>{label}</label>
+    <label htmlFor={id}>{children}</label>
     &nbsp;
     <input
       id={id}
