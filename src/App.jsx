@@ -1,13 +1,12 @@
 import * as React from 'react';
 
-// Custom hook to sync state with localStorage using useState and useEffect
 const useStorageState = (key, initialState) => {
   const [value, setValue] = React.useState(
     localStorage.getItem(key) || initialState
   );
 
   React.useEffect(() => {
-    localStorage.setItem(key, value); // Updates localStorage whenever the state changes
+    localStorage.setItem(key, value);
   }, [value, key]);
 
   return [value, setValue];
@@ -33,8 +32,6 @@ const App = () => {
     },
   ];
 
-// Key ('search') is used to store and retrieve the value from localStorage
-// Initial state ('React') is used if no value exists in localStorage for  given key
 const [searchTerm, setSearchTerm] = useStorageState(
   'search',
   'React'
@@ -52,7 +49,12 @@ const [searchTerm, setSearchTerm] = useStorageState(
     <div>
       <h1>My Hacker Stories</h1>
 
-      <Search search={searchTerm} onSearch={handleSearch} />
+      <InputWithLabel
+        id="search"
+        label="Search"
+        value={searchTerm}
+        onInputChange={handleSearch}
+      />
 
       <hr />
 
@@ -60,17 +62,25 @@ const [searchTerm, setSearchTerm] = useStorageState(
     </div>
   );
 };
-
-const Search = ({ search, onSearch }) => (
-  <div>
-    <label htmlFor="search">Search: </label>
+// turn specialized component into a generic one
+const InputWithLabel = ({
+  id,
+  label,
+  value,
+  type = 'text',
+  onInputChange,
+}) => (
+  // React.Fragment
+  <>
+    <label htmlFor={id}>{label}</label>
+    &nbsp;
     <input
-      id="search"
-      type="text"
-      value={search}
-      onChange={onSearch}
+      id={id}
+      type={type}
+      value={value}
+      onChange={onInputChange}
     />
-  </div>
+  </>
 );
 
 const List = ({ list }) => (
