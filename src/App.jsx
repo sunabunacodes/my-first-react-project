@@ -1,5 +1,17 @@
 import * as React from 'react';
 
+const useStorageState = (key, initialState) => {
+  const [value, setValue] = React.useState(
+    localStorage.getItem(key) || initialState
+  );
+
+  React.useEffect(() => {
+    localStorage.setItem(key, value);
+  }, [value, key]);
+
+  return [value, setValue];
+};
+
 const App = () => {
   const stories = [
     {
@@ -20,15 +32,10 @@ const App = () => {
     },
   ];
 
-  const [searchTerm, setSearchTerm] = React.useState(
-    localStorage.getItem('search') || 'React'
+  const [searchTerm, setSearchTerm] = useStorageState(
+    'search',
+    'React'
   );
-
-  // useEffect to update local storage whenever searchTerm changes
-  React.useEffect(() => {
-    // Update local storage with the current searchTerm
-    localStorage.setItem('search', searchTerm);
-  }, [searchTerm]); // Dependency array ensures this runs when searchTerm changes
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
