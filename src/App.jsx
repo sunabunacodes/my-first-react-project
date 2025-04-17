@@ -1,5 +1,14 @@
 import * as React from 'react';
 
+// Simulates fetching stories asynchronously
+const getAsyncStories = () =>
+  new Promise((resolve) =>
+    setTimeout(
+      () => resolve({ data: { stories: initialStories } }),
+      2000 // Simulates a 2-second delay
+    )
+  );
+
 const useStorageState = (key, initialState) => {
   const [value, setValue] = React.useState(
     localStorage.getItem(key) || initialState
@@ -12,24 +21,24 @@ const useStorageState = (key, initialState) => {
   return [value, setValue];
 };
 
-  const initialStories = [
-    {
-      title: 'React',
-      url: 'https://reactjs.org/',
-      author: 'Jordan Walke',
-      num_comments: 3,
-      points: 4,
-      objectID: 0,
-    },
-    {
-      title: 'Redux',
-      url: 'https://redux.js.org/',
-      author: 'Dan Abramov, Andrew Clark',
-      num_comments: 2,
-      points: 5,
-      objectID: 1,
-    },
-  ];
+const initialStories = [
+  {
+    title: 'React',
+    url: 'https://reactjs.org/',
+    author: 'Jordan Walke',
+    num_comments: 3,
+    points: 4,
+    objectID: 0,
+  },
+  {
+    title: 'Redux',
+    url: 'https://redux.js.org/',
+    author: 'Dan Abramov, Andrew Clark',
+    num_comments: 2,
+    points: 5,
+    objectID: 1,
+  },
+];
 
 const App = () => {
 
@@ -38,7 +47,18 @@ const App = () => {
     'React'
   );
 
-  const [stories, setStories] = React.useState(initialStories);
+  const [stories, setStories] = React.useState([]); // State to hold stories
+  const [isLoading, setIsLoading] = React.useState(false); // State to track loading status
+  const [isError, setIsError] = React.useState(false); // State to track error status. No error in our simulated enviroment but there could be with the use of an API
+
+  React.useEffect(() => {
+    setIsLoading(true); // Set loading to true when fetching starts
+    // Fetch stories asynchronously when the component mounts(is first rendered)
+    getAsyncStories().then((result) => {
+      setStories(result.data.stories); // Update state with fetched stories
+      setIsLoading(false); // Set loading to false when fetching is done
+    });
+  }, []); // Empty dependency array ensures this runs only once
 
   const handleRemoveStory = (item) => {
     const newStories = stories.filter(
@@ -56,6 +76,10 @@ const App = () => {
     story.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // if (isLoading) {
+  //   return <p>Loading ...</p>; // Show loading message while fetching but only loading will render and nothing else
+  // }
+
   return (
     <div>
       <h1>My Hacker Stories</h1>
@@ -69,8 +93,12 @@ const App = () => {
       </InputWithLabel>
 
       <hr />
-
-      <List list={searchedStories} onRemoveItem={handleRemoveStory}/>
+      {isError && <p>Something went wrong ...</p>} {/* instead of tenerary operator where one side returns null, we can use && to conditionally render the error message*/}
+      {isLoading ? (
+        <p>Loading ...</p> // Show loading message while fetching stories
+      ) : (
+        <List list={searchedStories} onRemoveItem={handleRemoveStory}/>
+      )}
     </div>
   );
 };
@@ -90,14 +118,14 @@ const InputWithLabel = ({
     if (isFocused && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [isFocused]); 
+  }, [isFocused]);
 
   return (
     <>
       <label htmlFor={id}>{children}</label>
       &nbsp;
       <input
-        ref={inputRef} 
+        ref={inputRef}
         id={id}
         type={type}
         value={value}
